@@ -360,7 +360,7 @@
 #define HEATER_2_MAXTEMP 275
 #define HEATER_3_MAXTEMP 275
 #define HEATER_4_MAXTEMP 275
-#define BED_MAXTEMP 120
+#define BED_MAXTEMP 100
 
 //===========================================================================
 //============================= PID Settings ================================
@@ -633,7 +633,7 @@
  * Override with M92
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4]]]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 81.13, 81.50, 399.68, 90.07 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 81.13, 81.50, 399.68, 89.3 }
 
 /**
  * Default Max Feed Rate (mm/s)
