@@ -75,18 +75,18 @@ void ST7920_Lite_Status_Screen::write_str(const char *str, uint8_t len) {
   while (*str && len--) write_byte(*str++);
 }
 
-void ST7920_Lite_Status_Screen::write_str_P(const char * const str) {
-  const char *p_str = (const char *)str;
+void ST7920_Lite_Status_Screen::write_str_P(PGM_P const str) {
+  PGM_P p_str = (PGM_P)str;
   while (char c = pgm_read_byte_near(p_str++)) write_byte(c);
 }
 
 void ST7920_Lite_Status_Screen::write_str(progmem_str str) {
-  write_str_P((const char*)str);
+  write_str_P((PGM_P)str);
 }
 
 void ST7920_Lite_Status_Screen::write_number(const int16_t value, const uint8_t digits/*=3*/) {
   char str[7];
-  const char *fmt;
+  PGM_P fmt;
   switch (digits) {
     case 6: fmt = PSTR("%6d"); break;
     case 5: fmt = PSTR("%5d"); break;
@@ -601,7 +601,7 @@ void ST7920_Lite_Status_Screen::draw_print_time(const duration_t &elapsed) {
   write_str(str, 6);
 }
 
-void ST7920_Lite_Status_Screen::draw_feedrate_percentage(const uint8_t percentage) {
+void ST7920_Lite_Status_Screen::draw_feedrate_percentage(const uint16_t percentage) {
   // We only have enough room for the feedrate when
   // we have one extruder
   #if EXTRUDERS == 1
@@ -709,7 +709,7 @@ bool ST7920_Lite_Status_Screen::indicators_changed() {
   // because the actual temps fluctuate so by updating
   // them only during blinks we gain a bit of stability.
   const bool       blink             = lcd_blink();
-  const uint8_t    feedrate_perc     = feedrate_percentage;
+  const uint16_t   feedrate_perc     = feedrate_percentage;
   const uint8_t    fan_speed         = ((fanSpeeds[0] + 1) * 100) / 256;
   const int16_t    extruder_1_target = thermalManager.degTargetHotend(0);
   #if EXTRUDERS == 2
@@ -736,7 +736,7 @@ void ST7920_Lite_Status_Screen::update_indicators(const bool forceUpdate) {
   if (forceUpdate || indicators_changed()) {
     const bool       blink             = lcd_blink();
     const duration_t elapsed           = print_job_timer.duration();
-    const uint8_t    feedrate_perc     = feedrate_percentage;
+    const uint16_t   feedrate_perc     = feedrate_percentage;
     const uint8_t    fan_speed         = ((fanSpeeds[0] + 1) * 100) / 256;
     const int16_t    extruder_1_temp   = thermalManager.degHotend(0),
                      extruder_1_target = thermalManager.degTargetHotend(0);
@@ -876,24 +876,32 @@ void ST7920_Lite_Status_Screen::update_status_or_position(bool forceUpdate) {
 }
 
 void ST7920_Lite_Status_Screen::update_progress(const bool forceUpdate) {
-  #if DISABLED(LCD_SET_PROGRESS_MANUALLY)
-    uint8_t progress_bar_percent = 0;
-  #endif
+  #if ENABLED(LCD_SET_PROGRESS_MANUALLY) || ENABLED(SDSUPPORT)
 
-  #if ENABLED(LCD_SET_PROGRESS_MANUALLY) && ENABLED(SDSUPPORT) && (ENABLED(LCD_PROGRESS_BAR) || ENABLED(DOGLCD))
-    // Progress bar % comes from SD when actively printing
-    if (IS_SD_PRINTING) progress_bar_percent = card.percentDone();
-  #endif
+    #if DISABLED(LCD_SET_PROGRESS_MANUALLY)
+      uint8_t progress_bar_percent; //=0
+    #endif
 
-  // Since the progress bar involves writing
-  // quite a few bytes to GDRAM, only do this
-  // when an update is actually necessary.
+    #if ENABLED(SDSUPPORT)
+      // Progress bar % comes from SD when actively printing
+      if (IS_SD_PRINTING) progress_bar_percent = card.percentDone();
+    #endif
 
-  static uint8_t last_progress = 0;
-  if (!forceUpdate && last_progress == progress_bar_percent) return;
-  last_progress = progress_bar_percent;
+    // Since the progress bar involves writing
+    // quite a few bytes to GDRAM, only do this
+    // when an update is actually necessary.
 
-  draw_progress_bar(progress_bar_percent);
+    static uint8_t last_progress = 0;
+    if (!forceUpdate && last_progress == progress_bar_percent) return;
+    last_progress = progress_bar_percent;
+
+    draw_progress_bar(progress_bar_percent);
+
+  #else
+
+    UNUSED(forceUpdate);
+
+  #endif // LCD_SET_PROGRESS_MANUALLY || SDSUPPORT
 }
 
 void ST7920_Lite_Status_Screen::update(const bool forceUpdate) {
