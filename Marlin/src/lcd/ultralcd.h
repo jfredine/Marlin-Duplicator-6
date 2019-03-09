@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (C) 2016 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (C) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (C) 2011 Camiel Gubbels / Erik van der Zalm
@@ -53,9 +53,13 @@
   #if HAS_GRAPHICAL_LCD
     #define SETCURSOR(col, row) lcd_moveto(col * (MENU_FONT_WIDTH), (row + 1) * (MENU_FONT_HEIGHT))
     #define SETCURSOR_RJ(len, row) lcd_moveto(LCD_PIXEL_WIDTH - len * (MENU_FONT_WIDTH), (row + 1) * (MENU_FONT_HEIGHT))
+    #define LCDPRINT(p) u8g.print(p)
+    #define LCDWRITE(c) u8g.print(c)
   #else
     #define SETCURSOR(col, row) lcd_moveto(col, row)
     #define SETCURSOR_RJ(len, row) lcd_moveto(LCD_WIDTH - len, row)
+    #define LCDPRINT(p) lcd_put_u8str(p)
+    #define LCDWRITE(c) lcd_put_wchar(c)
   #endif
 
   #define LCD_UPDATE_INTERVAL 100
@@ -271,6 +275,16 @@ public:
     static uint8_t status_message_level;      // Higher levels block lower levels
     static inline void reset_alert_level() { status_message_level = 0; }
 
+    #if HAS_PRINT_PROGRESS
+      #if ENABLED(LCD_SET_PROGRESS_MANUALLY)
+        static uint8_t progress_bar_percent;
+        static void set_progress(const uint8_t progress) { progress_bar_percent = MIN(progress, 100); }
+      #endif
+      static uint8_t get_progress();
+    #else
+      static constexpr uint8_t get_progress() { return 0; }
+    #endif
+
     #if HAS_SPI_LCD
 
       static bool detected();
@@ -311,16 +325,6 @@ public:
         static uint8_t status_scroll_offset;
       #endif
       static uint8_t lcd_status_update_delay;
-
-      #if HAS_PRINT_PROGRESS
-        #if ENABLED(LCD_SET_PROGRESS_MANUALLY)
-          static uint8_t progress_bar_percent;
-          static void set_progress(const uint8_t progress) { progress_bar_percent = MIN(progress, 100); }
-        #endif
-        static uint8_t get_progress();
-      #else
-        static constexpr uint8_t get_progress() { return 0; }
-      #endif
 
       #if HAS_LCD_CONTRAST
         static int16_t contrast;

@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (C) 2016 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (C) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (C) 2011 Camiel Gubbels / Erik van der Zalm
@@ -88,7 +88,7 @@ void GcodeSuite::G34() {
     }
 
     const float z_auto_align_amplification = parser.floatval('A', Z_STEPPER_ALIGN_AMP);
-    if (!WITHIN(z_auto_align_amplification, 0.5f, 2.0f)) {
+    if (!WITHIN(ABS(z_auto_align_amplification), 0.5f, 2.0f)) {
       SERIAL_ECHOLNPGM("?(A)mplification out of bounds (0.5-2.0).");
       break;
     }
@@ -263,19 +263,19 @@ void GcodeSuite::G34() {
 void GcodeSuite::M422() {
   const int8_t zstepper = parser.intval('S') - 1;
   if (!WITHIN(zstepper, 0, Z_STEPPER_COUNT - 1)) {
-    SERIAL_PROTOCOLLNPGM("?(S) Z-Stepper index invalid.");
+    SERIAL_ECHOLNPGM("?(S) Z-Stepper index invalid.");
     return;
   }
 
   const float x_pos = parser.floatval('X', z_auto_align_xpos[zstepper]);
   if (!WITHIN(x_pos, X_MIN_POS, X_MAX_POS)) {
-    SERIAL_PROTOCOLLNPGM("?(X) out of bounds.");
+    SERIAL_ECHOLNPGM("?(X) out of bounds.");
     return;
   }
 
   const float y_pos = parser.floatval('Y', z_auto_align_ypos[zstepper]);
   if (!WITHIN(y_pos, Y_MIN_POS, Y_MAX_POS)) {
-    SERIAL_PROTOCOLLNPGM("?(Y) out of bounds.");
+    SERIAL_ECHOLNPGM("?(Y) out of bounds.");
     return;
   }
 

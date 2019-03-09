@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (C) 2016 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (C) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (C) 2011 Camiel Gubbels / Erik van der Zalm
@@ -143,11 +143,26 @@ void GCodeParser::parse(char *p) {
       while (*p == ' ') p++;
 
       // Bail if there's no command code number
-      if (!NUMERIC(*p)) return;
+      // Prusa MMU2 has T?/Tx/Tc commands
+      #if DISABLED(PRUSA_MMU2)
+        if (!NUMERIC(*p)) return;
+      #endif
 
       // Save the command letter at this point
       // A '?' signifies an unknown command
       command_letter = letter;
+
+
+      #if ENABLED(PRUSA_MMU2)
+        if (letter == 'T') {
+          // check for special MMU2 T?/Tx/Tc commands
+          if (*p == '?' || *p == 'x' || *p == 'c') {
+            string_arg = p;
+            return;
+          }
+        }
+      #endif
+
 
       // Get the code number - integer digits only
       codenum = 0;
@@ -313,13 +328,10 @@ void GCodeParser::parse(char *p) {
 #endif // CNC_COORDINATE_SYSTEMS
 
 void GCodeParser::unknown_command_error() {
-  #if NUM_SERIAL > 1
-    const int16_t port = command_queue_port[cmd_queue_index_r];
-  #endif
-  SERIAL_ECHO_START_P(port);
-  SERIAL_ECHOPAIR_P(port, MSG_UNKNOWN_COMMAND, command_ptr);
-  SERIAL_CHAR_P(port, '"');
-  SERIAL_EOL_P(port);
+  SERIAL_ECHO_START();
+  SERIAL_ECHOPAIR(MSG_UNKNOWN_COMMAND, command_ptr);
+  SERIAL_CHAR('"');
+  SERIAL_EOL();
 }
 
 #if ENABLED(DEBUG_GCODE_PARSER)
@@ -342,7 +354,7 @@ void GCodeParser::unknown_command_error() {
       SERIAL_ECHO(string_arg);
       SERIAL_CHAR('"');
     }
-    SERIAL_ECHOPGM("\n\n");
+    SERIAL_ECHOLNPGM("\n");
     for (char c = 'A'; c <= 'Z'; ++c) {
       if (seen(c)) {
         SERIAL_ECHOPAIR("Code '", c); SERIAL_ECHOPGM("':");
@@ -361,7 +373,7 @@ void GCodeParser::unknown_command_error() {
         }
         else
           SERIAL_ECHOPGM(" (no value)");
-        SERIAL_ECHOPGM("\n\n");
+        SERIAL_ECHOLNPGM("\n");
       }
     }
   }
