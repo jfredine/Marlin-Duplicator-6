@@ -129,7 +129,6 @@
 // Enable the Bluetooth serial interface on AT90USB devices
 //#define BLUETOOTH
 
-
 // Choose the name from boards.h that matches your setup
 #define MOTHERBOARD BOARD_ULTIMAIN_2
 #ifndef MOTHERBOARD
@@ -1027,7 +1026,7 @@
 // @section extruder
 
 // For direct drive extruder v9 set to true, for geared extruder set to false.
-#define INVERT_E0_DIR true
+#define INVERT_E0_DIR false
 #define INVERT_E1_DIR false
 #define INVERT_E2_DIR false
 #define INVERT_E3_DIR false
@@ -1998,6 +1997,7 @@
 // SSD1306 OLED full graphics generic display
 //
 //#define U8GLIB_SSD1306
+
 //
 // SAV OLEd LCD module support using either SSD1306 or SH1106 based LCD modules
 //
