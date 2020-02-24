@@ -56,26 +56,26 @@ const short temptable_1[][2] PROGMEM = {
   { OV( 268), 150 },
   { OV( 293), 145 },
   { OV( 320), 140 },
-  { OV( 348), 135 },
-  { OV( 379), 130 },
-  { OV( 411), 125 },
-  { OV( 445), 120 },
-  { OV( 480), 115 },
-  { OV( 516), 110 },
-  { OV( 553), 105 },
-  { OV( 591), 100 },
-  { OV( 628),  95 },
-  { OV( 665),  90 },
-  { OV( 702),  85 },
-  { OV( 737),  80 },
-  { OV( 770),  75 },
-  { OV( 801),  70 },
-  { OV( 830),  65 },
-  { OV( 857),  60 },
-  { OV( 881),  55 },
-  { OV( 903),  50 },
-  { OV( 922),  45 },
-  { OV( 939),  40 },
+  { OV( 392), 135 },  // Measured
+  { OV( 414), 130 },  // Extrapolated
+  { OV( 436), 125 },  // Extrapolated
+  { OV( 458), 120 },  // Extrapolated
+  { OV( 480), 115 },  // Extrapolated
+  { OV( 562), 110 },  // Measured
+  { OV( 594), 105 },  // Measured
+  { OV( 627), 100 },  // Measured
+  { OV( 659),  95 },  // Measured
+  { OV( 694),  90 },  // Measured
+  { OV( 729),  85 },  // Measured
+  { OV( 761),  80 },  // Measured
+  { OV( 790),  75 },  // Measured
+  { OV( 818),  70 },  // Measured
+  { OV( 836),  65 },  // Measured
+  { OV( 865),  60 },  // Measured
+  { OV( 886),  55 },  // Measured
+  { OV( 911),  50 },  // Measured
+  { OV( 925),  45 },  // Measured
+  { OV( 942),  40 },  // Measured
   { OV( 954),  35 },
   { OV( 966),  30 },
   { OV( 977),  25 },
